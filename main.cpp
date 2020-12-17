@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     double mean_departure_time;
     int    number_of_servers;
     double simulation_time;
-    bool verbose = false;
+    bool   verbose = false;
 
     if(argc >= 5)
     {

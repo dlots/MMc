@@ -2,9 +2,33 @@
 
 using namespace queue;
 
-mmc_loss::mmc_loss(mmc_loss::time mean_arrival_time,
-                   mmc_loss::time mean_departure_time,
-                   std::size_t    servers_number,
+server::server() : next_departure_time_(std::nullopt) { }
+
+void server::set_time(queue::time_t next_departure_time)
+{
+    auto other = std::make_optional(next_departure_time);
+    this->next_departure_time_.swap(other);
+}
+
+void server::make_empty() noexcept
+{
+    next_departure_time_.reset();
+}
+
+bool server::is_empty() const noexcept
+{
+    return next_departure_time_.has_value();
+}
+
+queue::time_t server::get_time() const
+{
+    return next_departure_time_.value();
+}
+
+
+mmc_loss::mmc_loss(queue::time_t mean_arrival_time,
+                   queue::time_t mean_departure_time,
+                   std::size_t   servers_number,
                    bool verbose)
 {
     this->mean_arrival_time   = mean_arrival_time;
@@ -15,12 +39,12 @@ mmc_loss::mmc_loss(mmc_loss::time mean_arrival_time,
     arrival_rate   = 1.0 / mean_arrival_time;
     departure_rate = 1.0 / mean_departure_time;
 
-    servers = std::vector<std::optional<mmc_loss::time>>(servers_number, std::nullopt);
+    servers = std::vector<queue::server>(servers_number);
     next_server = servers.begin();
     servers_active = 0;
 }
 
-void mmc_loss::simulate(mmc_loss::time time_end)
+void mmc_loss::simulate(queue::time_t time_end)
 {
     current_time = 0;
 
@@ -50,17 +74,18 @@ void mmc_loss::simulate(mmc_loss::time time_end)
                 // assigning a server to the customer:
 
                 // find an available server
-                auto available_server_it = std::find(servers.begin(), servers.end(), std::nullopt);
+                auto available_server_it = std::find(servers.begin(), servers.end(), server{});
 
                 // set serving time to the server
-                *available_server_it = current_time + exponential_value(departure_rate);
+                queue::time_t time_for_the_customer = current_time + exponential_value(departure_rate);
+                available_server_it->set_time(time_for_the_customer);
                 servers_active++;
 
                 if(servers_active == 1)
                 {
                     // there is only one customer in the system - no one else to serve but him
                     next_server =  available_server_it;
-                    next_departure = available_server_it->value();
+                    next_departure = available_server_it->get_time();
                 }
             }
             else
@@ -78,7 +103,7 @@ void mmc_loss::simulate(mmc_loss::time time_end)
             customers_served++;
 
             // free the server
-            *next_server = std::nullopt;
+            next_server->make_empty();
             servers_active--;
 
             if(servers_active == 0)
@@ -91,7 +116,7 @@ void mmc_loss::simulate(mmc_loss::time time_end)
             {
                 // find the nearest time from planned departures
                 next_server = find_next_server();
-                next_departure = next_server->value();
+                next_departure = next_server->get_time();
             }
         }
     }
@@ -107,7 +132,7 @@ void mmc_loss::simulate(mmc_loss::time time_end)
 mmc_loss::server_it mmc_loss::find_next_server()
 {
     std::sort(servers.begin(), servers.end());
-    auto server_iterator = std::upper_bound(servers.begin(), servers.end(), std::nullopt);
+    auto server_iterator = std::upper_bound(servers.begin(), servers.end(), server{});
     return server_iterator;
 }
 
