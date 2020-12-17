@@ -8,6 +8,7 @@
 #include <random>
 #include <sstream>
 #include <limits>
+#include <chrono>
 
 namespace queue
 {
@@ -57,7 +58,8 @@ namespace queue
 
         [[nodiscard]] server_it find_next_server();
 
-        [[nodiscard]] double exponential_value(double lambda) const;
+        [[nodiscard]] double lambda_exponential_value();
+        [[nodiscard]] double mu_exponential_value();
 
         void compute_stationary_probabilities();
 
@@ -74,6 +76,11 @@ namespace queue
         rate_t departure_rate;  // arrival rate in customers per second
 
         // current parameters in simulation:
+
+        std::exponential_distribution<> lambda;
+        std::exponential_distribution<> mu;
+        std::mt19937 gen_lambda;
+        std::mt19937 gen_mu;
 
         std::size_t servers_active = 0;  // total number of active services
 

@@ -39,6 +39,14 @@ mmc_loss::mmc_loss(queue::time_t mean_arrival_time,
     arrival_rate   = 1.0 / mean_arrival_time;
     departure_rate = 1.0 / mean_departure_time;
 
+    std::random_device rd1;
+    gen_lambda = std::mt19937(rd1());
+    lambda = std::exponential_distribution<>(arrival_rate);
+
+    std::random_device rd2;
+    gen_mu = std::mt19937(rd2());
+    mu = std::exponential_distribution<>(departure_rate);
+
     servers = std::vector<queue::server>(servers_number);
     next_server = servers.begin();
     servers_active = 0;
@@ -48,7 +56,7 @@ void mmc_loss::simulate(queue::time_t time_end)
 {
     current_time = 0;
 
-    next_arrival = current_time + exponential_value(arrival_rate);
+    next_arrival = current_time + lambda_exponential_value();
     next_departure = time_end;
 
     std::ostringstream debug_stream;
@@ -67,7 +75,7 @@ void mmc_loss::simulate(queue::time_t time_end)
             // arrival happened
 
             current_time = next_arrival;
-            next_arrival = current_time + exponential_value(arrival_rate);
+            next_arrival = current_time + lambda_exponential_value();
 
             if(servers_active < servers_number)
             {
@@ -77,7 +85,7 @@ void mmc_loss::simulate(queue::time_t time_end)
                 auto available_server_it = std::find(servers.begin(), servers.end(), server{});
 
                 // set serving time to the server
-                queue::time_t time_for_the_customer = current_time + exponential_value(departure_rate);
+                queue::time_t time_for_the_customer = current_time + mu_exponential_value();
                 available_server_it->set_time(time_for_the_customer);
                 servers_active++;
 
@@ -136,13 +144,14 @@ mmc_loss::server_it mmc_loss::find_next_server()
     return server_iterator;
 }
 
-double mmc_loss::exponential_value(double lambda) const
+double mmc_loss::lambda_exponential_value()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::exponential_distribution<> d(lambda);
+    return lambda(gen_lambda);
+}
 
-    return d(gen);
+double mmc_loss::mu_exponential_value()
+{
+    return mu(gen_mu);
 }
 
 void mmc_loss::compute_stationary_probabilities()
