@@ -151,10 +151,10 @@ void mmc_loss::print_simulation_results(std::ostream& os)
 {
     compute_stationary_probabilities();
 
-    os << "\ntotal_time: "    << simulation_time  << "\n";
-    os << "served: "        << customers_served << "\n";
-    os << "denied: "        << customers_denied << "\n";
-    os << "average_state: " << average_state    << "\n";
+    os << "'total_time': "  << simulation_time  << "\n";
+    os << "'served': "        << customers_served << "\n";
+    os << "'denied': "        << customers_denied << "\n";
+    os << "'average_state': " << average_state    << "\n";
     os << "stationary probabilities: "          << "\n";
 
     for(std::size_t state{0}; state < stationary_probabilities.size(); state++)

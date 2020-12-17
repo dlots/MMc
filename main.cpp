@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     {
         std::stringstream ss;
         ss << argv[1] << " " << argv[2] << " "
-           << argv[3] << " " << argv[4];
+           << argv[3] << " " << argv[4] << "\n";
         std::cerr << ss.str();
 
         ss >> mean_arrival_time;
