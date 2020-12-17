@@ -4,11 +4,13 @@ using namespace queue;
 
 mmc_loss::mmc_loss(mmc_loss::time mean_arrival_time,
                    mmc_loss::time mean_departure_time,
-                   std::size_t    servers_number)
+                   std::size_t    servers_number,
+                   bool verbose)
 {
     this->mean_arrival_time   = mean_arrival_time;
     this->mean_departure_time = mean_departure_time;
     this->servers_number      = servers_number;
+    this->verbose             = verbose;
 
     arrival_rate   = 1.0 / mean_arrival_time;
     departure_rate = 1.0 / mean_departure_time;
@@ -29,8 +31,11 @@ void mmc_loss::simulate(mmc_loss::time time_end)
     
     while (current_time < time_end)
     {
-        debug_print(debug_stream);
-
+        if (this->verbose)
+        {
+            debug_print(debug_stream);
+        }
+        
         states_history.push_back(servers_active);
 
         if(next_arrival < next_departure)
@@ -91,7 +96,10 @@ void mmc_loss::simulate(mmc_loss::time time_end)
         }
     }
 
-    std::cout << debug_stream.str();
+    if (this->verbose)
+    {
+        std::cerr << debug_stream.str();
+    }
     
     simulation_time = time_end;
 }
@@ -143,7 +151,7 @@ void mmc_loss::print_simulation_results(std::ostream& os)
 {
     compute_stationary_probabilities();
 
-    os << "total_time: "    << simulation_time  << "\n";
+    os << "\ntotal_time: "    << simulation_time  << "\n";
     os << "served: "        << customers_served << "\n";
     os << "denied: "        << customers_denied << "\n";
     os << "average_state: " << average_state    << "\n";

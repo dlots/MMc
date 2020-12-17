@@ -17,7 +17,7 @@ namespace queue
         using server_it = std::vector<std::optional<double>>::iterator;
 
     public:
-        mmc_loss(time mean_arrival_time, time mean_departure_time, std::size_t servers_number);
+        mmc_loss(time mean_arrival_time, time mean_departure_time, std::size_t servers_number, bool verbose);
 
         void simulate(time time_end);
 
@@ -38,6 +38,7 @@ namespace queue
         time mean_arrival_time;       // mean time for the next arrival;
         time mean_departure_time;     // mean time for the next departure;
         std::size_t servers_number;  // total number of services in system
+        bool verbose;                // whether to print the debug output
 
         rate arrival_rate;    // departure rate in customers per second
         rate departure_rate;  // arrival rate in customers per second
