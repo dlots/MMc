@@ -25,9 +25,11 @@ void mmc_loss::simulate(mmc_loss::time time_end)
     next_arrival = current_time + exponential_value(arrival_rate);
     next_departure = time_end;
 
+    std::ostringstream debug_stream;
+    
     while (current_time < time_end)
     {
-        debug_print();
+        debug_print(debug_stream);
 
         states_history.push_back(servers_active);
 
@@ -89,6 +91,8 @@ void mmc_loss::simulate(mmc_loss::time time_end)
         }
     }
 
+    std::cout << debug_stream.str();
+    
     simulation_time = time_end;
 }
 

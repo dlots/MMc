@@ -31,7 +31,10 @@ int main(int argc, char* argv[])
     queue::mmc_loss queue_model(mean_arrival_time, mean_departure_time, number_of_servers);
 
     queue_model.simulate(simulation_time);
-    queue_model.print_simulation_results();
+    
+    std::ostringstream results;
+    queue_model.print_simulation_results(results);
+    std::cout << results.str();
 
     return 0;
 }

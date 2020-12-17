@@ -6,6 +6,7 @@
 #include <optional>
 #include <algorithm>
 #include <random>
+#include <sstream>
 
 namespace queue
 {
