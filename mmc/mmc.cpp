@@ -143,15 +143,20 @@ void mmc_loss::print_simulation_results(std::ostream& os)
 {
     compute_stationary_probabilities();
 
-    os << "total_time: "    << simulation_time  << std::endl;
-    os << "served: "        << customers_served << std::endl;
-    os << "denied: "        << customers_denied << std::endl;
-    os << "average_state: " << average_state    << std::endl;
-    os << "stationary probabilities: "          << std::endl;
+    os << "total_time: "    << simulation_time  << "\n";
+    os << "served: "        << customers_served << "\n";
+    os << "denied: "        << customers_denied << "\n";
+    os << "average_state: " << average_state    << "\n";
+    os << "stationary probabilities: "          << "\n";
 
     for(std::size_t state{0}; state < stationary_probabilities.size(); state++)
     {
-        os << state << ": " << stationary_probabilities[state] << std::endl;
+        if (stationary_probabilities[state] == 0)
+        {
+            os << "stationary probabilities for states " << state << "-" << stationary_probabilities.size() - 1 << " are 0\n";
+            break;
+        }
+        os << state << ": " << stationary_probabilities[state] << "\n";
     }
 
     auto sum_of_sp = std::accumulate(stationary_probabilities.cbegin(),
@@ -186,5 +191,5 @@ void mmc_loss::debug_print(std::ostream& debug_stream) const
     }
 
     debug_stream << ", servers active - ";
-    debug_stream << servers_active + servers_active_modifier << "/" << servers_number << std::endl;
+    debug_stream << servers_active + servers_active_modifier << "/" << servers_number << "\n";
 }

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        std::cerr << "wrong parameters" << std::endl;
+        std::cerr << "wrong parameters" << "\n";
         exit(1);
     }
 
